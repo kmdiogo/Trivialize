@@ -11,7 +11,7 @@ export default new Vuex.Store({
         playerActive: false,
         player: null,
         lockControls: false,
-        infoModalOpen: false
+        infoModalOpen: false,
     },
     mutations: {
         updateAccessToken(state, value) {
@@ -34,7 +34,7 @@ export default new Vuex.Store({
         },
         updateInfoModalOpen(state, value) {
             state.infoModalOpen = value;
-        }
+        },
 
     },
     actions: {

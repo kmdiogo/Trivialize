@@ -55,7 +55,7 @@
                             this.$store.commit('updateInfoModalOpen', false);
                             this.$router.push('/play');
                         }
-                        console.log(state);
+                        //console.log(state);
                     });
 
                     // Ready
