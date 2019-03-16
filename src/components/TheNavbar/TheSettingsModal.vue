@@ -3,10 +3,10 @@
         <p v-if="$store.state.lockControls" class="text-danger">*Please wait for playback to finish before changing settings</p>
         <b-card>
             <b-form-group label="Listening Duration (seconds)">
-                <VueSlider :min="5" :max="20" v-model="listeningDuration"></VueSlider>
+                <VueSlider :min="5" :max="20" v-model="listeningDuration" :disabled="$store.state.lockControls"></VueSlider>
             </b-form-group>
             <b-form-group label="Number of Choices">
-                <VueSlider :min="2" :max="10" v-model="numberOfChoices"></VueSlider>
+                <VueSlider :min="2" :max="10" v-model="numberOfChoices" :disabled="$store.state.lockControls"></VueSlider>
             </b-form-group>
         </b-card>
     </b-modal>

@@ -68,7 +68,8 @@
                 userChoiceURI: null,
                 currentTrackURI: null,
                 selectionMade: false,
-                progress: 0
+                progress: 0,
+                remainingTracksLength: 0
             }
         },
         computed: {
@@ -85,7 +86,7 @@
                 return new SpotifyController(this.$store.state.accessToken);
             },
             songsLeftsHeader() {
-                return `Songs Left: ${Object.keys(this.remainingTracks).length}`
+                return `Songs Left: ${this.remainingTracksLength}`
             },
             gameOverHeader() {
                 return `You got ${this.numberOfCorrect} / ${Object.keys(this.tracks).length} songs correct!`
@@ -117,6 +118,7 @@
                 this.incorrectSongs = [];
                 this.selectionMade = false;
                 this.progress = 0;
+                this.remainingTracksLength = 0;
             },
 
             async onPlaylistClick(row) {
@@ -132,6 +134,7 @@
 
                 this.tracks = cloneDeep(formatted);
                 this.remainingTracks = cloneDeep(formatted);
+                this.remainingTracksLength = Object.keys(this.remainingTracks).length;
                 this.playNextTrack();
             },
 
@@ -167,7 +170,8 @@
                 await this.waitForTrackPlay();
                 let counter = setInterval(async ()=>{
                     this.progress += 100;
-                    if (this.progress === this.$store.state.settings.listeningDuration || this.selectionMade) {
+                    // If song duration ends or a selection was made or tracks is empty (game was restarted) reset the progress bar
+                    if (this.progress === this.$store.state.settings.listeningDuration || this.selectionMade || !this.tracks) {
                         clearInterval(counter);
                         this.progress = 0;
                     }
@@ -194,6 +198,7 @@
 
                 // remove the currently playing song from the list of remaining tracks
                 delete this.remainingTracks[this.currentTrackURI];
+                this.remainingTracksLength -= 1;
 
                 // If n is greater than the amount of remaining tracks, set n to amount of remaining tracks
                 let numberOfChoices = this.$store.state.settings.numberOfChoices-1;
