@@ -1,44 +1,46 @@
 <template>
-    <div class="d-flex justify-content-center align-items-center h-100 flex-column">
-        <transition name="fade" mode="out-in">
-            <b-card title="Select the Playlist currently active" class="overflow-auto h-50" v-if="!tracks">
-                <hr />
-                <b-table :items="playLists" :fields="playlistTableFields" outlined reponsive hover class="overflow-auto" thead-class="d-none" v-if="playLists">
-                    <template slot="images" slot-scope="data">
-                        <b-img width="100px" height="100px" :src="data.item.images[0].url" fluid></b-img>
-                    </template>
-                    <template slot="select" slot-scope="row">
-                        <b-button @click="onPlaylistClick(row)">Select</b-button>
-                    </template>
-                </b-table>
-            </b-card>
-            <b-card v-else-if="gameOver">
-                <h3>You got {{numberOfCorrect}} / {{Object.keys(tracks).length}} songs correct!</h3>
-                <h5 v-if="incorrectSongs.length > 0">You missed these songs: </h5>
-                <b-table :items="incorrectSongs" :fields="['artist','name']">
-                    <template slot="artist" slot-scope="data">
-                        {{data.item.artists[0].name}}
-                    </template>
-                </b-table>
-            </b-card>
-            <b-card class="overflow-auto h-50" v-else>
-                <h5>Songs left: {{Object.keys(remainingTracks).length}}</h5>
-                <b-button block :variant="buttonVariant(track.uri)" v-for="track in choices" :key="track.uri" @click="onChoiceClick(track.uri)" :disabled="selectionMade">
-                    {{track.artists[0].name}} - {{track.name}}
-                </b-button>
-            </b-card>
-        </transition>
-        <div class="d-flex flex-column">
-            <b-card v-if="!gameOver">
-                <b-button-group>
-                    <b-button variant="primary" @click="replayTrack" :disabled="$store.state.lockControls"><i class="fas fa-undo"></i></b-button>
-                </b-button-group>
-            </b-card>
-            <b-card>
-                <b-button variant="primary" @click="loadPlaylists">Play Again</b-button>
+    <div class="d-flex justify-content-center align-items-center h-100 flex-colum position-relative">
+        <b-button variant="secondary" @click="loadPlaylists" style="position: absolute; top: 10px; left: 10px" :disabled="selectionMade || !tracks">Choose New Playlist</b-button>
+        <div class="d-flex flex-column justify-content-center align-items-center h-100">
+            <transition name="fade" mode="out-in">
+                <b-card class="h-50 shadow-lg" v-if="!tracks" header="Select a Playlist" header-tag="h3" body-class="overflow-auto p-4">
+                    <b-table :items="playLists" :fields="playlistTableFields" outlined reponsive hover class="overflow-auto" thead-class="d-none" v-if="playLists">
+                        <template slot="images" slot-scope="data">
+                            <b-img width="100px" height="100px" :src="data.item.images[0].url" fluid></b-img>
+                        </template>
+                        <template slot="select" slot-scope="row">
+                            <b-button @click="onPlaylistClick(row)">Select</b-button>
+                        </template>
+                    </b-table>
+                </b-card>
+                <b-card v-else-if="gameOver" class="shadow-lg" header-tag="h3" :header="gameOverHeader" body-class="overflow-auto">
+                    <div v-if="incorrectSongs.length === 0">
+                        <h5>100%! Nice Job!</h5>
+                    </div>
+                    <div v-else>
+                        <h5>You missed these songs: </h5>
+                        <b-table :items="incorrectSongs" :fields="['artist','name']">
+                            <template slot="artist" slot-scope="data">
+                                {{data.item.artists[0].name}}
+                            </template>
+                        </b-table>
+                    </div>
+                    <b-button @click="loadPlaylists" variant="primary">Play Again?</b-button>
+                </b-card>
+                <b-card class="overflow-auto h-50 shadow-lg" v-else :header="songsLeftsHeader" header-tag="h3" body-class="overflow-auto">
+                    <b-button block :variant="buttonVariant(track.uri)" v-for="track in choices" :key="track.uri" @click="onChoiceClick(track.uri)" :disabled="selectionMade">
+                        {{track.artists[0].name}} - {{track.name}}
+                    </b-button>
+                </b-card>
+            </transition>
+
+            <b-card v-if="!gameOver && tracks" class="w-100 shadow-lg" body-class="p-2" body-bg-variant="dark">
+                <b-button variant="secondary" @click="replayTrack" :disabled="$store.state.lockControls"><i class="fas fa-undo"></i></b-button>
+                <b-progress class="mt-2" :max="$store.state.settings.listeningDuration-800">
+                    <b-progress-bar :value="progress" variant="primary"></b-progress-bar>
+                </b-progress>
             </b-card>
         </div>
-
     </div>
 
 </template>
@@ -57,7 +59,6 @@
                 tracks: null,
                 remainingTracks: {},
                 choices: [],
-                //currentTrackId: null,
                 calculatedTrackStart: null,
                 currentTrackDuration: null,
                 incorrectSongs: [],
@@ -66,13 +67,11 @@
                 showFeedback: false,
                 userChoiceURI: null,
                 currentTrackURI: null,
-                selectionMade: false
+                selectionMade: false,
+                progress: 0
             }
         },
         computed: {
-            currentTrackId() {
-                return this.$store.state.currentTrackId;
-            },
             http() {
                 let config = {
                     baseURL: 'https://api.spotify.com/v1/me',
@@ -85,16 +84,19 @@
             spotifyController() {
                 return new SpotifyController(this.$store.state.accessToken);
             },
+            songsLeftsHeader() {
+                return `Songs Left: ${Object.keys(this.remainingTracks).length}`
+            },
+            gameOverHeader() {
+                return `You got ${this.numberOfCorrect} / ${Object.keys(this.tracks).length} songs correct!`
+            }
         },
         beforeRouteEnter(to, from, next) {
             next(vm => {
                 if (!vm.$store.state.accessToken)
                     vm.$router.push('/');
                 else {
-                    // Load playlists
-                    vm.spotifyController.getUserPlaylists().then(response=>{
-                        vm.playLists = response.data.items;
-                    })
+                    vm.loadPlaylists();
                 }
             })
         },
@@ -114,6 +116,7 @@
                 this.numberOfCorrect = 0;
                 this.incorrectSongs = [];
                 this.selectionMade = false;
+                this.progress = 0;
             },
 
             async onPlaylistClick(row) {
@@ -121,7 +124,6 @@
 
                 // Get all tracks for the selected playlist
                 let trackData = await this.http.get(row.item.tracks.href + `?market=from_token&fields=items(track(uri,name,is_playable,id,duration_ms,artists))`);
-                console.log(trackData);
                 let formatted = {};
                 trackData.data.items.forEach(item=>{
                     if (item.track.is_playable)
@@ -158,24 +160,25 @@
                     position_ms: this.calculatedTrackStart
                 });
 
-                // Set default duration if the user-defined duration is longer than the track
-                // This makes it so the song will never play till the end (which we want to avoid since
-                // that will automatically move to the next track)
-                // In this case, we simply set the duration to one second less than the duration of the song
-                let duration = this.$store.state.listeningDuration;
-                if (duration >= this.tracks[this.currentTrackURI].duration_ms)
-                    duration = this.tracks[this.currentTrackURI].duration_ms - 1000;
-
                 // Pause song after duration ends
-                // nowURI is used to prevent the song from playing if user guess quickly
+                // nowURI is used to prevent the song from playing if user guesses quickly
                 let nowURI = this.currentTrackURI;
-                setTimeout(function(){
-                    if (nowURI === this.currentTrackURI) {
-                        this.$store.dispatch('pause').then(()=>{
-                            this.$store.commit('updateLockControls', false);
-                        });
+
+                await this.waitForTrackPlay();
+                let counter = setInterval(async ()=>{
+                    this.progress += 100;
+                    if (this.progress === this.$store.state.settings.listeningDuration || this.selectionMade) {
+                        clearInterval(counter);
+                        this.progress = 0;
                     }
-                }.bind(this), duration);
+                }, 100);
+                setTimeout(async function(){
+                    await this.spotifyController.getCurrentTrack();
+                    if (nowURI === this.currentTrackURI) {
+                        await this.$store.dispatch('pause');
+                        this.$store.commit('updateLockControls', false);
+                    }
+                }.bind(this), this.$store.state.settings.listeningDuration);
             },
 
             /**
@@ -193,7 +196,7 @@
                 delete this.remainingTracks[this.currentTrackURI];
 
                 // If n is greater than the amount of remaining tracks, set n to amount of remaining tracks
-                let numberOfChoices = this.$store.state.numberOfChoices-1;
+                let numberOfChoices = this.$store.state.settings.numberOfChoices-1;
                 if (Object.keys(this.remainingTracks).length < numberOfChoices) {
                     numberOfChoices = Object.keys(this.remainingTracks).length;
                 }
@@ -206,22 +209,13 @@
                 // Reshuffle so current song isn't always the first element in choice array
                 this.choices = shuffle(this.choices);
 
-                // Set default duration if the user-defined duration is longer than the track
-                // This makes it so the song will never play till the end (which we want to avoid since
-                // that will automatically move to the next track)
-                // In this case, we simply set the duration to one second less than the duration of the song
-                let duration = this.$store.state.listeningDuration;
-                let currentTrackDuration = this.tracks[this.currentTrackURI].duration_ms;
-                if (duration >= currentTrackDuration)
-                    duration = currentTrackDuration - 1000;
-
                 // Calculate the random starting point for the current song
-                // If the duration is less than 20 seconds, set the starting point to the beginning
-                // Otherwise,
-                if (this.tracks[this.currentTrackURI].duration_ms <= 20000)
+                // If the duration is less than 30 seconds or less, set the starting point to the beginning
+                // Otherwise, choose a random starting point from the beginning to (end - 30secs)
+                if (this.tracks[this.currentTrackURI].duration_ms <= 30000)
                     this.calculatedTrackStart = 0;
                 else {
-                    this.calculatedTrackStart = Math.floor(Math.random() * this.tracks[this.currentTrackURI].duration_ms - duration);
+                    this.calculatedTrackStart = Math.floor(Math.random() * this.tracks[this.currentTrackURI].duration_ms - 30000);
                 }
             },
 
@@ -262,12 +256,27 @@
                     return 'outline-primary';
             },
 
-            async stopTrack() {
-                await this.$store.dispatch('pause');
-                setTimeout(()=>{
-                    this.$store.commit('updateLockControls', false);
-                }, 500);
-
+            /**
+             * Spin Lock until a track is playing in the device
+             * Times out after 10 seconds
+             * @returns {Promise<*>}
+             */
+            async waitForTrackPlay() {
+                return new Promise(resolve=>{
+                    let timePassed = 0;
+                    let id = setInterval(async ()=>{
+                        timePassed += 500;
+                        let currentState = await this.spotifyController.getCurrentTrack();
+                        if (currentState.data.is_playing) {
+                            clearInterval(id);
+                            resolve(id);
+                        }
+                        else if (timePassed > 10000) {
+                            clearInterval(id);
+                            resolve(id);
+                        }
+                    }, 500)
+                })
             }
 
         }

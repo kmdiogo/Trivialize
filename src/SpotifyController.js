@@ -12,16 +12,12 @@ export default class SpotifyController {
         });
     }
 
-    currentTrack() {
+    getCurrentTrack() {
         return this.http.get('player/currently-playing');
     }
 
-    next() {
-        return this.http.post('player/next/');
-    }
-
     getUserPlaylists() {
-        return this.http.get('/playlists');
+        return this.http.get('/playlists?limit=50');
     }
 
     setShuffle(state) {

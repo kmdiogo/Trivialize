@@ -1,21 +1,24 @@
 <template>
     <div id="app" class="h-100 d-flex flex-column">
         <TheNavbar class="flex-shrink-0"></TheNavbar>
-        <SettingsBox class="settings-box"></SettingsBox>
+        <!--<SettingsBox class="settings-box"></SettingsBox>-->
         <router-view class="flex-grow-1" />
-        <TheInfoModal></TheInfoModal>
     </div>
 </template>
 
 
 <script>
-    import SettingsBox from "@/components/SettingsBox";
     import TheNavbar from "@/components/TheNavbar";
-    import TheInfoModal from "@/components/TheInfoModal";
+
     export default {
-        components: {TheInfoModal, TheNavbar, SettingsBox},
+        components: {TheNavbar},
         created() {
             if (window.location.hash) {
+                this.getTokenFromURL();
+            }
+        },
+        methods: {
+            getTokenFromURL() {
                 let hash = window.location.hash.substring(1);
                 let token = hash.split('=')[1];
                 this.$store.commit('updateAccessToken', token);
