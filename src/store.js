@@ -13,6 +13,7 @@ export default new Vuex.Store({
     state: {
         accessToken: '',
         lockControls: false,
+        isLite: true
     },
     mutations: {
         updateAccessToken(state, value) {
@@ -21,6 +22,9 @@ export default new Vuex.Store({
         updateLockControls(state, value) {
             state.lockControls = value;
         },
+        updateIsLite(state, value) {
+            state.isLite = value;
+        }
 
     },
 })

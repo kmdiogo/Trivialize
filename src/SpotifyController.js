@@ -24,4 +24,8 @@ export default class SpotifyController {
         return this.http.put(`player/shuffle?state=${state}`);
     }
 
+    getUserProfile() {
+        return this.http.get('');
+    }
+
 }

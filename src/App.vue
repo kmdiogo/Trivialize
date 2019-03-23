@@ -12,18 +12,6 @@
 
     export default {
         components: {TheNavbar},
-        created() {
-            if (window.location.hash) {
-                this.getTokenFromURL();
-            }
-        },
-        methods: {
-            getTokenFromURL() {
-                let hash = window.location.hash.substring(1);
-                let token = hash.split('=')[1];
-                this.$store.commit('updateAccessToken', token);
-            }
-        }
     }
 </script>
 

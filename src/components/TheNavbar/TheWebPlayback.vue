@@ -6,10 +6,10 @@
     export default {
         name: "TheWebPlayback",
         created() {
-            if (this.$store.state.accessToken) {
+            /*if (this.$store.state.accessToken) {
                 this.startSpotifyWebPlayer();
-                this.$store.commit('updateInfoModalOpen', true);
-            }
+
+            }*/
         },
         methods: {
             startSpotifyWebPlayer() {

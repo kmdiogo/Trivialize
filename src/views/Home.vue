@@ -7,21 +7,40 @@
             <b-spinner label="Spinning" />
         </b-card>
 
-        <TheWebPlayback></TheWebPlayback>
+        <TheWebPlayback v-if="!$store.state.isLite" ref="TheWebPlayback"></TheWebPlayback>
     </div>
 </template>
 
 <script>
     import {spotifyAuthUrl} from "@/spotifyAppConfig";
     import TheWebPlayback from "@/components/TheNavbar/TheWebPlayback";
+    import SpotifyController from '@/SpotifyController'
 
     export default {
         name: 'home',
         components: {TheWebPlayback},
+        mounted() {
+            if (window.location.hash) {
+                this.getTokenFromURL();
+            }
+        },
         methods: {
+            async getTokenFromURL() {
+                let hash = window.location.hash.substring(1);
+                let token = hash.split('=')[1];
+                this.$store.commit('updateAccessToken', token);
+                let r = await new SpotifyController(this.$store.state.accessToken).getUserProfile();
+                if (r.data.product === 'premium') {
+                    this.$store.commit('updateIsLite', false);
+                    this.$store.commit('updateInfoModalOpen', true);
+                    console.log(this.$refs.TheWebPlayback);
+                    this.$refs.TheWebPlayback.startSpotifyWebPlayer();
+                }
+
+            },
             redirectToSpotify() {
                 window.location.href = spotifyAuthUrl;
             },
-        }
+        },
     }
 </script>
