@@ -7,7 +7,7 @@
             <b-spinner label="Spinning" />
         </b-card>
 
-        <TheWebPlayback v-if="!$store.state.isLite" ref="TheWebPlayback"></TheWebPlayback>
+        <TheWebPlayback></TheWebPlayback>
     </div>
 </template>
 
@@ -19,7 +19,8 @@
     export default {
         name: 'home',
         components: {TheWebPlayback},
-        mounted() {
+        created() {
+            // Get token sent by Spotify in URL
             if (window.location.hash) {
                 this.getTokenFromURL();
             }
@@ -31,11 +32,10 @@
                 this.$store.commit('updateAccessToken', token);
                 let r = await new SpotifyController(this.$store.state.accessToken).getUserProfile();
                 if (r.data.product === 'premium') {
-                    this.$store.commit('updateIsLite', false);
+                    this.$store.commit('updateIsPremium', true);
                     this.$store.commit('updateInfoModalOpen', true);
-                    console.log(this.$refs.TheWebPlayback);
-                    this.$refs.TheWebPlayback.startSpotifyWebPlayer();
                 }
+                // NOTE: The redirect to choose playlist is done by TheWebPlayback state
 
             },
             redirectToSpotify() {

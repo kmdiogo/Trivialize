@@ -23,6 +23,7 @@ export default {
         },
         nextTrack(context) {
             return context.state.player.nextTrack();
-        }
+        },
+
     }
 }

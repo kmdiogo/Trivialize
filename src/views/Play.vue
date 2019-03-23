@@ -1,38 +1,27 @@
 <template>
     <div class="d-flex justify-content-center align-items-center h-100 flex-colum position-relative">
-        <b-button variant="secondary" @click="loadPlaylists" style="position: absolute; top: 10px; left: 10px" :disabled="selectionMade || !tracks">Choose New Playlist</b-button>
+        <b-button variant="secondary" @click="goToPlaylists" style="position: absolute; top: 10px; left: 10px" :disabled="selectionMade || !tracks">Choose New Playlist</b-button>
         <div class="d-flex flex-column justify-content-center align-items-center h-100">
-            <transition name="fade" mode="out-in">
-                <b-card class="h-50 shadow-lg" v-if="!tracks" header="Select a Playlist" header-tag="h3" body-class="overflow-auto p-4">
-                    <b-table :items="playLists" :fields="playlistTableFields" outlined reponsive hover class="overflow-auto" thead-class="d-none" v-if="playLists">
-                        <template slot="images" slot-scope="data">
-                            <b-img width="100px" height="100px" :src="data.item.images[0].url" fluid></b-img>
-                        </template>
-                        <template slot="select" slot-scope="row">
-                            <b-button @click="onPlaylistClick(row)">Select</b-button>
+            <b-card v-if="gameOver" class="shadow-lg" header-tag="h3" :header="gameOverHeader" body-class="overflow-auto">
+                <div v-if="incorrectSongs.length === 0">
+                    <h5>100%! Nice Job!</h5>
+                </div>
+                <div v-else>
+                    <h5>You missed these songs: </h5>
+                    <b-table :items="incorrectSongs" :fields="['artist','name']">
+                        <template slot="artist" slot-scope="data">
+                            {{data.item.artists[0].name}}
                         </template>
                     </b-table>
-                </b-card>
-                <b-card v-else-if="gameOver" class="shadow-lg" header-tag="h3" :header="gameOverHeader" body-class="overflow-auto">
-                    <div v-if="incorrectSongs.length === 0">
-                        <h5>100%! Nice Job!</h5>
-                    </div>
-                    <div v-else>
-                        <h5>You missed these songs: </h5>
-                        <b-table :items="incorrectSongs" :fields="['artist','name']">
-                            <template slot="artist" slot-scope="data">
-                                {{data.item.artists[0].name}}
-                            </template>
-                        </b-table>
-                    </div>
-                    <b-button @click="loadPlaylists" variant="primary">Play Again?</b-button>
-                </b-card>
-                <b-card class="overflow-auto h-50 shadow-lg" v-else :header="songsLeftsHeader" header-tag="h3" body-class="overflow-auto">
-                    <b-button block :variant="buttonVariant(track.uri)" v-for="track in choices" :key="track.uri" @click="onChoiceClick(track.uri)" :disabled="selectionMade">
-                        {{track.artists[0].name}} - {{track.name}}
-                    </b-button>
-                </b-card>
-            </transition>
+                </div>
+                <b-button @click="goToPlaylists" variant="primary">Play Again?</b-button>
+            </b-card>
+
+            <b-card class="overflow-auto h-50 shadow-lg" v-else :header="songsLeftsHeader" header-tag="h3" body-class="overflow-auto">
+                <b-button block :variant="buttonVariant(track.uri)" v-for="track in choices" :key="track.uri" @click="onChoiceClick(track.uri)" :disabled="selectionMade">
+                    {{track.artists[0].name}} - {{track.name}}
+                </b-button>
+            </b-card>
 
             <b-card v-if="!gameOver && tracks" class="w-100 shadow-lg" body-class="p-2" body-bg-variant="dark">
                 <b-button variant="secondary" @click="replayTrack" :disabled="$store.state.lockControls"><i class="fas fa-undo"></i></b-button>
@@ -54,8 +43,6 @@
         name: "Play",
         data() {
             return {
-                playlistTableFields: ['name', 'images', 'select'],
-                playLists: null,
                 tracks: null,
                 remainingTracks: {},
                 choices: [],
@@ -96,16 +83,18 @@
             next(vm => {
                 if (!vm.$store.state.accessToken)
                     vm.$router.push('/');
+                else if (!vm.$store.state.gameState.tracks) {
+                    vm.$router.push('/choosePlaylist');
+                }
                 else {
-                    vm.loadPlaylists();
+                    vm.startGame();
                 }
             })
         },
         methods: {
-            async loadPlaylists() {
-                let response = await this.spotifyController.getUserPlaylists();
-                this.playLists = response.data.items;
+            async goToPlaylists() {
                 this.resetGame();
+                this.$router.push('/choosePlaylist');
             },
 
             async resetGame() {
@@ -121,13 +110,11 @@
                 this.remainingTracksLength = 0;
             },
 
-            async onPlaylistClick(row) {
+            async startGame() {
+                this.resetGame();
                 await this.spotifyController.setShuffle(true);
-
-                // Get all tracks for the selected playlist
-                let trackData = await this.http.get(row.item.tracks.href + `?market=from_token&fields=items(track(uri,name,is_playable,id,duration_ms,artists))`);
                 let formatted = {};
-                trackData.data.items.forEach(item=>{
+                this.$store.state.gameState.tracks.forEach(item=>{
                     if (item.track.is_playable)
                         formatted[item.track.uri] = cloneDeep(item.track);
                 });

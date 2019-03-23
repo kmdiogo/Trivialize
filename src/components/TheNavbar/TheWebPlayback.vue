@@ -6,10 +6,9 @@
     export default {
         name: "TheWebPlayback",
         created() {
-            /*if (this.$store.state.accessToken) {
+            if (this.$store.state.accessToken) {
                 this.startSpotifyWebPlayer();
-
-            }*/
+            }
         },
         methods: {
             startSpotifyWebPlayer() {
@@ -30,7 +29,7 @@
                         if (!this.$store.state.webPlayback.active) {
                             this.$store.commit('updatePlayerActive', true);
                             this.$store.commit('updateInfoModalOpen', false);
-                            this.$router.push('/play');
+                            this.$router.push('/choosePlaylist');
                         }
                         //console.log(state);
                     });

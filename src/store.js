@@ -2,18 +2,20 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import WebPlayback from '@/modules/webPlayback'
 import Settings from '@/modules/settings'
+import GameState from '@/modules/gameState'
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
     modules: {
         webPlayback: WebPlayback,
-        settings: Settings
+        settings: Settings,
+        gameState: GameState
     },
     state: {
         accessToken: '',
         lockControls: false,
-        isLite: true
+        isPremium: true
     },
     mutations: {
         updateAccessToken(state, value) {
@@ -22,8 +24,8 @@ export default new Vuex.Store({
         updateLockControls(state, value) {
             state.lockControls = value;
         },
-        updateIsLite(state, value) {
-            state.isLite = value;
+        updateIsPremium(state, value) {
+            state.isPremium = value;
         }
 
     },
