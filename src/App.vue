@@ -1,6 +1,6 @@
 <template>
     <div id="app" class="h-100 d-flex flex-column">
-        <TheNavbar class="flex-shrink-0"></TheNavbar>
+        <TheNavbar class="flex-shrink-0 tabBar"></TheNavbar>
         <router-view />
     </div>
 </template>
@@ -37,5 +37,8 @@
         position: absolute;
         bottom: 10px;
         right: 10px;
+    }
+    .tabBar{
+        margin-left: 1600px;
     }
 </style>

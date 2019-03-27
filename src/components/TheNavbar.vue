@@ -2,8 +2,8 @@
     <div>
         <b-navbar toggleable="md" variant="primary">
             <b-navbar-brand style="font-family: 'Pacifico', cursive;" class="d-flex">
-                <b-img :src="require('@/assets/images/Trivialize_Logo.png')" fluid style="width: 3rem; height: 2rem;" />
-                <h4>&nbsp;Trivialize!</h4>
+                <b-img :src="require('@/assets/images/Trivialize_Logo.png')" fluid style="width: 3rem; height: 3rem;" />
+                <h3 class="navbar-text mx-2">Trivialize!</h3>
             </b-navbar-brand>
 
             <b-navbar-toggle target="nav_collapse" />
@@ -37,5 +37,7 @@
 </script>
 
 <style scoped>
-
+    .navbar-text{
+        color: black;
+    }
 </style>
