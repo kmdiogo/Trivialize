@@ -1,5 +1,6 @@
+@import 'bootsrap-overrides';
 @import '~bootstrap/scss/bootstrap';
-@import '~bootstrap-vue/dist/bootstrap-vue.min.css';
+@import '~bootstrap-vue/src/index';
 @import 'transitions-and-animations.scss';
 
 body, html {

@@ -1,8 +1,7 @@
 <template>
     <div id="app" class="h-100 d-flex flex-column">
         <TheNavbar class="flex-shrink-0"></TheNavbar>
-        <!--<SettingsBox class="settings-box"></SettingsBox>-->
-        <router-view class="flex-grow-1" />
+        <router-view />
     </div>
 </template>
 

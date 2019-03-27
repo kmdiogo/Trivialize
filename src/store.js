@@ -15,7 +15,8 @@ export default new Vuex.Store({
     state: {
         accessToken: '',
         lockControls: false,
-        isPremium: true
+        isPremium: false,
+        isPlayliteModalOpen: false,
     },
     mutations: {
         updateAccessToken(state, value) {
@@ -26,6 +27,9 @@ export default new Vuex.Store({
         },
         updateIsPremium(state, value) {
             state.isPremium = value;
+        },
+        updateIsPlayliteModalOpen(state, value) {
+            state.isPlayliteModalOpen = value;
         }
 
     },

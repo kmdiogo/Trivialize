@@ -8,6 +8,21 @@
         </b-card>
 
         <TheWebPlayback></TheWebPlayback>
+
+        <b-modal title="Trivialize Lite" centered ok-only v-model="$store.state.isPlayliteModalOpen" size="lg" class="text-left" @ok="$router.push('/play')">
+            <h3 class="text-center">Before you Play...</h3>
+            <h6>
+                It looks like either your Spotify account isn't premium or your browser doesn't support Trivialize.
+                Regardless, you'll still be able to take advantage of most of Trivialize's features, but
+                this means you won't be able to link up a Spotify device to Trivialize.
+            </h6>
+            <h6>
+                Because of this, the songs that are played are from Spotify's 30 second previews clips.
+                This can mean that some songs in your playlists won't available (if Spotify doesn't have a preview available) and tracks will play
+                from the same 30 second preview clip (which can get boring once you've memorized that specific track clip)
+            </h6>
+            <h6>You're still welcome to use the rest of the features Trivialize has to offer. Have fun!</h6>
+        </b-modal>
     </div>
 </template>
 
@@ -17,7 +32,7 @@
     import SpotifyController from '@/SpotifyController'
 
     export default {
-        name: 'home',
+        name: 'WaitForDevice',
         components: {TheWebPlayback},
         created() {
             // Get token sent by Spotify in URL
@@ -35,7 +50,10 @@
                     this.$store.commit('updateIsPremium', true);
                     this.$store.commit('updateInfoModalOpen', true);
                 }
-                // NOTE: The redirect to choose playlist is done by TheWebPlayback state
+                else {
+                    this.$store.commit('isPlayliteModalOpen', true);
+                }
+                // NOTE: The redirect to choose playlist is done by TheWebPlayback state or the PlayliteModal
 
             },
             redirectToSpotify() {

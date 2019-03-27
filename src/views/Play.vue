@@ -1,34 +1,37 @@
 <template>
-    <div class="d-flex justify-content-center align-items-center h-100 flex-colum position-relative">
+    <div class="d-flex h-100 position-relative">
         <b-button variant="secondary" @click="goToPlaylists" style="position: absolute; top: 10px; left: 10px" :disabled="selectionMade || !tracks">Choose New Playlist</b-button>
-        <div class="d-flex flex-column justify-content-center align-items-center h-100">
-            <b-card v-if="gameOver" class="shadow-lg" header-tag="h3" :header="gameOverHeader" body-class="overflow-auto">
-                <div v-if="incorrectSongs.length === 0">
-                    <h5>100%! Nice Job!</h5>
-                </div>
-                <div v-else>
-                    <h5>You missed these songs: </h5>
-                    <b-table :items="incorrectSongs" :fields="['artist','name']">
-                        <template slot="artist" slot-scope="data">
-                            {{data.item.artists[0].name}}
-                        </template>
-                    </b-table>
-                </div>
-                <b-button @click="goToPlaylists" variant="primary">Play Again?</b-button>
-            </b-card>
+        <div class="d-flex flex-column justify-content-center align-items-center h-100 w-100">
+            <div class="d-flex flex-column justify-content-center align-items-center h-75 play-card">
+                <b-card v-if="gameOver" class="shadow-lg" header-tag="h4" :header="gameOverHeader" body-class="overflow-auto" header-bg-variant="secondary">
+                    <div v-if="incorrectSongs.length === 0">
+                        <h5>100%! Nice Job!</h5>
+                    </div>
+                    <div v-else>
+                        <h5>You missed these songs: </h5>
+                        <b-table :items="incorrectSongs" :fields="['artist','name']">
+                            <template slot="artist" slot-scope="data">
+                                {{data.item.artists[0].name}}
+                            </template>
+                        </b-table>
+                    </div>
+                    <b-button @click="goToPlaylists" variant="primary">Play Again?</b-button>
+                </b-card>
 
-            <b-card class="overflow-auto h-50 shadow-lg" v-else :header="songsLeftsHeader" header-tag="h3" body-class="overflow-auto">
-                <b-button block :variant="buttonVariant(track.uri)" v-for="track in choices" :key="track.uri" @click="onChoiceClick(track.uri)" :disabled="selectionMade">
-                    {{track.artists[0].name}} - {{track.name}}
-                </b-button>
-            </b-card>
+                <b-card class="overflow-auto shadow-lg w-100 h-100" v-else :header="songsLeftsHeader" header-tag="h4" body-class="overflow-auto" header-bg-variant="secondary">
+                    <b-button block :variant="buttonVariant(track.uri)" v-for="track in choices" :key="track.uri" @click="onChoiceClick(track.uri)" :disabled="selectionMade">
+                        {{track.artists[0].name}} - {{track.name}}
+                    </b-button>
+                </b-card>
 
-            <b-card v-if="!gameOver && tracks" class="w-100 shadow-lg" body-class="p-2" body-bg-variant="dark">
-                <b-button variant="secondary" @click="replayTrack" :disabled="$store.state.lockControls"><i class="fas fa-undo"></i></b-button>
-                <b-progress class="mt-2" :max="$store.state.settings.listeningDuration-800">
-                    <b-progress-bar :value="progress" variant="primary"></b-progress-bar>
-                </b-progress>
-            </b-card>
+                <b-card v-if="!gameOver && tracks" class="w-100 shadow-lg" body-class="p-2" body-bg-variant="dark" header-bg-variant="secondary">
+                    <b-button variant="secondary" @click="replayTrack" :disabled="$store.state.lockControls"><i class="fas fa-undo"></i></b-button>
+                    <b-progress class="mt-2" :max="$store.state.settings.listeningDuration-800">
+                        <b-progress-bar :value="progress" variant="primary"></b-progress-bar>
+                    </b-progress>
+                </b-card>
+            </div>
+
         </div>
     </div>
 
@@ -47,16 +50,16 @@
                 remainingTracks: {},
                 choices: [],
                 calculatedTrackStart: null,
-                currentTrackDuration: null,
                 incorrectSongs: [],
                 numberOfCorrect: 0,
                 gameOver: false,
                 showFeedback: false,
                 userChoiceURI: null,
-                currentTrackURI: null,
+                currentTrack: null,
                 selectionMade: false,
                 progress: 0,
-                remainingTracksLength: 0
+                remainingTracksLength: 0,
+                NEXT_SONG_DELAY: 2000
             }
         },
         computed: {
@@ -98,7 +101,8 @@
             },
 
             async resetGame() {
-                await this.$store.dispatch('pause');
+                if (this.$store.state.isPremium)
+                    await this.$store.dispatch('pause');
                 this.gameOver = false;
                 this.remainingTracks = {};
                 this.tracks = null;
@@ -108,15 +112,22 @@
                 this.selectionMade = false;
                 this.progress = 0;
                 this.remainingTracksLength = 0;
+                this.currentTrack = null;
             },
 
             async startGame() {
-                this.resetGame();
-                await this.spotifyController.setShuffle(true);
+                await this.resetGame();
                 let formatted = {};
                 this.$store.state.gameState.tracks.forEach(item=>{
-                    if (item.track.is_playable)
-                        formatted[item.track.uri] = cloneDeep(item.track);
+                    if (this.$store.state.isPremium) {
+                        if (item.track.is_playable)
+                            formatted[item.track.uri] = cloneDeep(item.track);
+                    }
+                    else {
+                        if (item.track.preview_url)
+                            formatted[item.track.uri] = cloneDeep(item.track);
+                    }
+
                 });
 
                 this.tracks = cloneDeep(formatted);
@@ -132,8 +143,8 @@
             async playNextTrack() {
                 let keys = Object.keys(this.remainingTracks);
                 let rand = Math.floor(Math.random()*keys.length);
-                this.currentTrackURI = keys[rand];
-                await this.updateChoices();
+                this.currentTrack = this.remainingTracks[keys[rand]];
+                this.updateChoices();
                 this.selectionMade = false;
                 this.replayTrack();
             },
@@ -145,14 +156,42 @@
             async replayTrack() {
                 this.showFeedback = false;
                 this.$store.commit('updateLockControls', true);
+
+                if (this.$store.state.isPremium) {
+                    this.replayTrackPremium();
+                }
+                else {
+                    this.replayTrackLite();
+                }
+
+            },
+
+            async replayTrackLite() {
+                let sound = new Audio(this.currentTrack.preview_url);
+                sound.play();
+                let counter = setInterval(()=>{
+                    this.progress += 100;
+                    // If song duration ends or a selection was made or tracks is empty (game was restarted) reset the progress bar
+                    if (this.progress === this.$store.state.settings.listeningDuration || this.selectionMade || !this.tracks) {
+                        sound.pause();
+                        this.progress = 0;
+                        if (!this.selectionMade || !this.tracks)
+                            this.$store.commit('updateLockControls', false);
+
+                        clearInterval(counter);
+                    }
+                }, 100);
+            },
+
+            async replayTrackPremium() {
                 await this.http.put('player/play', {
-                    uris: [this.currentTrackURI],
+                    uris: [this.currentTrack.uri],
                     position_ms: this.calculatedTrackStart
                 });
 
                 // Pause song after duration ends
                 // nowURI is used to prevent the song from playing if user guesses quickly
-                let nowURI = this.currentTrackURI;
+                let nowURI = this.currentTrack.uri;
 
                 await this.waitForTrackPlay();
                 let counter = setInterval(async ()=>{
@@ -165,7 +204,7 @@
                 }, 100);
                 setTimeout(async function(){
                     await this.spotifyController.getCurrentTrack();
-                    if (nowURI === this.currentTrackURI) {
+                    if (nowURI === this.currentTrack.uri) {
                         await this.$store.dispatch('pause');
                         this.$store.commit('updateLockControls', false);
                     }
@@ -177,14 +216,14 @@
              * randomly sampled-without-replacement options.
              * n is defined by the user in SettingsBox
              */
-            async updateChoices() {
+            updateChoices() {
                 this.choices = [];
 
                 // Add the current playing song as a choice
-                this.choices.push(cloneDeep(this.remainingTracks[this.currentTrackURI]));
+                this.choices.push(cloneDeep(this.remainingTracks[this.currentTrack.uri]));
 
                 // remove the currently playing song from the list of remaining tracks
-                delete this.remainingTracks[this.currentTrackURI];
+                delete this.remainingTracks[this.currentTrack.uri];
                 this.remainingTracksLength -= 1;
 
                 // If n is greater than the amount of remaining tracks, set n to amount of remaining tracks
@@ -204,24 +243,29 @@
                 // Calculate the random starting point for the current song
                 // If the duration is less than 30 seconds or less, set the starting point to the beginning
                 // Otherwise, choose a random starting point from the beginning to (end - 30secs)
-                if (this.tracks[this.currentTrackURI].duration_ms <= 30000)
+                if (this.tracks[this.currentTrack.uri].duration_ms <= 30000) {
                     this.calculatedTrackStart = 0;
-                else {
-                    this.calculatedTrackStart = Math.floor(Math.random() * this.tracks[this.currentTrackURI].duration_ms - 30000);
                 }
+                else {
+                    this.calculatedTrackStart = Math.floor(Math.random() * (this.tracks[this.currentTrack.uri].duration_ms - 30000));
+                }
+
             },
 
             async onChoiceClick(uri) {
                 this.selectionMade = true;
-                await this.$store.dispatch('pause');
+
+                if (this.$store.state.isPremium)
+                    await this.$store.dispatch('pause');
+
                 this.userChoiceURI = uri;
                 this.showFeedback = true;
                 this.$store.commit('updateLockControls', true);
-                if (uri === this.currentTrackURI) {
+                if (uri === this.currentTrack.uri) {
                     this.numberOfCorrect += 1;
                 }
                 else {
-                    this.incorrectSongs.push(cloneDeep(this.tracks[this.currentTrackURI]));
+                    this.incorrectSongs.push(cloneDeep(this.tracks[this.currentTrack.uri]));
                 }
 
                 setTimeout(async ()=>{
@@ -232,14 +276,14 @@
                     }
                     else
                         this.playNextTrack();
-                }, 2000)
+                }, this.NEXT_SONG_DELAY)
             },
 
             /**
              * Gets the button styling for a generated button. Will return success or danger when a question is answered
              */
             buttonVariant(uri) {
-                if (this.showFeedback && uri === this.currentTrackURI) {
+                if (this.showFeedback && uri === this.currentTrack.uri) {
                     return 'success';
                 }
                 else if (this.showFeedback && uri === this.userChoiceURI)
@@ -276,6 +320,13 @@
 
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
+    @media (max-width: 768px) {
+        .play-card {
+            width: 100% !important;
+        }
+    }
+    .play-card {
+        width: 75%;
+    }
 </style>

@@ -28,5 +28,9 @@ export default class SpotifyController {
         return this.http.get('');
     }
 
+    searchPlaylist(keyword) {
+        return this.http.get(`https://api.spotify.com/v1/search?q=${keyword}&type=playlist`);
+    }
+
 
 }
