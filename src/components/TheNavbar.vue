@@ -38,6 +38,6 @@
 
 <style scoped>
     .navbar-text{
-        color: black;
+        color: black !important;
     }
 </style>
