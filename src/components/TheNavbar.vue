@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-navbar toggleable="md" variant="primary">
+        <b-navbar toggleable="md" class="vignette nav-border" variant="primary">
             <b-navbar-brand style="font-family: 'Pacifico', cursive;" class="d-flex">
                 <b-img :src="require('@/assets/images/Trivialize_Logo.png')" fluid style="width: 3rem; height: 3rem;" />
                 <h3 class="navbar-text mx-2">Trivialize!</h3>
@@ -37,6 +37,12 @@
 </script>
 
 <style scoped>
+    .vignette{
+        box-shadow: inset 0 0 20px black;
+    }
+    .nav-border {
+        border-radius: 0 0 0 15px;
+    }
     .navbar-text{
         color: black !important;
     }

@@ -7,7 +7,6 @@
     </div>
 </template>
 
-
 <script>
     import TheNavbar from "@/components/TheNavbar";
 
@@ -43,11 +42,9 @@
     .tabBar{
         margin-left: 1600px;
     }
-
     .overlay{
         position:fixed;
-        background: url(https://cdn.wallpapersafari.com/71/83/lgzfcB.jpg);
-                //url(https://cdn.wallpapersafari.com/67/93/b4lhpN.jpg);
+        background-image: url('assets/images/Beatles_Wallpaper.jpg');
         -webkit-animation:100s scroll infinite linear;
         -moz-animation:100s scroll infinite linear;
         -o-animation:100s scroll infinite linear;
@@ -58,31 +55,26 @@
         width:100%;
         height:100%;
     }
-
     @-webkit-keyframes scroll{
         100%{
             background-position:0px -3000px;
         }
     }
-
     @-moz-keyframes scroll{
         100%{
             background-position:0px -3000px;
         }
     }
-
     @-o-keyframes scroll{
         100%{
             background-position:0px -3000px;
         }
     }
-
     @-ms-keyframes scroll{
         100%{
             background-position:0px -3000px;
         }
     }
-
     @keyframes scroll{
         100%{
             background-position:0px -3000px;

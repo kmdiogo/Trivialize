@@ -1,7 +1,7 @@
 <template>
     <div class="d-flex justify-content-center align-items-center h-75">
-        <b-card title="Welcome to Trivialize!" sub-title="Click the button below to connect your account and get started" v-if="!$store.state.accessToken">
-            <b-button @click="redirectToSpotify" style="color: green; background-color: black" size="lg"><i class="fab fa-spotify"></i></b-button>
+        <b-card title="Welcome to Trivialize!" sub-title="Click the button below to connect your account and get started" class="main-card" v-if="!$store.state.accessToken">
+            <b-button @click="redirectToSpotify" style="color: #1ED760; background-color: black" size="lg"><i class="fab fa-spotify fa-2x"></i></b-button>
         </b-card>
         <b-card title="Waiting For Spotify Device" v-else>
             <b-spinner label="Spinning" />
@@ -19,7 +19,7 @@
             <h6>
                 Because of this, the songs that are played are from Spotify's 30 second previews clips.
                 This can mean that some songs in your playlists won't available (if Spotify doesn't have a preview available) and tracks will play
-                from the same 30 second preview clip (which can get boring once you've memorized that specific track clip)
+                from the same 30 second preview clip (which can get boring once you've memorized that specific track clip).
             </h6>
             <h6>You're still welcome to use the rest of the features Trivialize has to offer. Have fun!</h6>
         </b-modal>
@@ -62,3 +62,9 @@
         },
     }
 </script>
+
+<style scoped>
+    .main-card{
+        border-radius: 10px 10px 10px 10px !important;
+    }
+</style>
