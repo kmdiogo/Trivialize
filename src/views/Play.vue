@@ -1,4 +1,5 @@
 <template>
+    <!-- TODO: Add carousel background of currently playing song's cover art, unblur when song selected -->
     <div class="d-flex h-100 position-relative">
         <b-button variant="secondary" @click="goToPlaylists" style="position: absolute; top: 10px; left: 10px" :disabled="selectionMade || !tracks">Choose New Playlist</b-button>
         <div class="d-flex flex-column justify-content-center align-items-center h-100 w-100">

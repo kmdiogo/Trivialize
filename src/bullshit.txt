@@ -1,0 +1,4 @@
+If song is deleted from Spotify, Trivialize will forever show the choice and never play that song.
+The Spotify API still returns the track in the data even if it has been removed.
+
+1. Choice wasn't on song, then the next song had the correct option from the last. (out of sync)

@@ -1,5 +1,8 @@
 <template>
-    <div class="d-flex justify-content-center align-items-center h-75">
+    <div class="d-flex justify-content-center align-items-center">
+        <video autoplay muted loop class="background-video">
+            <source src="../assets/images/Turntable.mp4" type="video/mp4">
+        </video>
         <b-card title="Welcome to Trivialize!" sub-title="Click the button below to connect your account and get started" class="main-card" v-if="!$store.state.accessToken">
             <b-button @click="redirectToSpotify" style="color: #1ED760; background-color: black" size="lg"><i class="fab fa-spotify fa-2x"></i></b-button>
         </b-card>
@@ -66,5 +69,13 @@
 <style scoped>
     .main-card{
         border-radius: 10px 10px 10px 10px !important;
+    }
+    .background-video {
+        position: fixed;
+        top: 0;
+        left: 0;
+        min-width: 100%;
+        min-height: 100%;
+        z-index: -1;
     }
 </style>

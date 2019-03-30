@@ -1,9 +1,7 @@
 <template>
     <div id="app" class="h-100 d-flex flex-column">
-        <div class="overlay">
-            <TheNavbar class="flex-shrink-0 tabBar"></TheNavbar>
-            <router-view />
-        </div>
+        <TheNavbar class="flex-shrink-0 the-navbar"></TheNavbar>
+        <router-view class="flex-grow-1" />
     </div>
 </template>
 
@@ -23,6 +21,18 @@
         -moz-osx-font-smoothing: grayscale;
         text-align: center;
         color: #2c3e50;
+
+        /*background-image: url('assets/images/Beatles_Wallpaper.jpg');
+        -webkit-animation:100s scroll infinite linear;
+        -moz-animation:100s scroll infinite linear;
+        -o-animation:100s scroll infinite linear;
+        -ms-animation:100s scroll infinite linear;
+        animation:100s scroll infinite linear;*/
+    }
+    .the-navbar {
+        position: absolute;
+        right: 0;
+        top: 0;
     }
     #nav {
         padding: 30px;
@@ -39,17 +49,9 @@
         bottom: 10px;
         right: 10px;
     }
-    .tabBar{
-        margin-left: 1600px;
-    }
     .overlay{
         position:fixed;
-        background-image: url('assets/images/Beatles_Wallpaper.jpg');
-        -webkit-animation:100s scroll infinite linear;
-        -moz-animation:100s scroll infinite linear;
-        -o-animation:100s scroll infinite linear;
-        -ms-animation:100s scroll infinite linear;
-        animation:100s scroll infinite linear;
+
         top:0;
         left:0;
         width:100%;

@@ -1,4 +1,5 @@
 <template>
+    <!-- TODO: Add carousel background of album covers -->
     <div class="d-flex justify-content-center align-items-center h-100 flex-column position-relative">
         <b-card class="h-75 shadow-lg choose-playlist-card" header="Select a Playlist" header-tag="h4" body-class="overflow-auto p-4" no-body header-bg-variant="secondary">
             <b-tabs card class="overflow-auto">
