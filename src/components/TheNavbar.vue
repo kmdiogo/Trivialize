@@ -38,7 +38,7 @@
 
 <style scoped>
     .vignette{
-        box-shadow: inset 0 0 20px black;
+        box-shadow: inset 0 0 15px black;
     }
     .nav-border {
         border-radius: 0 0 0 15px;
