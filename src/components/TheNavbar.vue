@@ -1,21 +1,21 @@
 <template>
     <div style="z-index: 1;">
-        <b-navbar toggleable="md" class="vignette nav-border" variant="primary">
+        <b-navbar toggleable="md" class="vignette nav-border d-none d-md-flex" variant="primary">
             <b-navbar-brand style="font-family: 'Pacifico', cursive;" class="d-flex">
                 <b-img :src="require('@/assets/images/Trivialize_Logo.png')" fluid style="width: 3rem; height: 3rem;" />
                 <h3 class="navbar-text mx-2">Trivialize!</h3>
             </b-navbar-brand>
 
-            <b-navbar-toggle target="nav_collapse" />
-
-            <b-collapse is-nav id="nav_collapse">
-                <b-navbar-nav class="ml-auto">
-                    <b-button class="m-1" variant="info" @click="$store.commit('updateInfoModalOpen',true)"><i class="far fa-question-circle"></i></b-button>
-                    <b-button class="m-1" variant="secondary" v-b-modal.TheSettingsModal><i class="fas fa-cog"></i></b-button>
-                </b-navbar-nav>
-            </b-collapse>
-
+            <b-navbar-nav class="ml-auto">
+                <b-button class="m-1" variant="info" @click="$store.commit('updateInfoModalOpen',true)"><i class="far fa-question-circle"></i></b-button>
+                <b-button class="m-1" variant="secondary" v-b-modal.TheSettingsModal><i class="fas fa-cog"></i></b-button>
+            </b-navbar-nav>
         </b-navbar>
+
+        <div class="d-md-none">
+            <b-button class="m-1" variant="info" @click="$store.commit('updateInfoModalOpen',true)"><i class="far fa-question-circle"></i></b-button>
+            <b-button class="m-1" variant="secondary" v-b-modal.TheSettingsModal><i class="fas fa-cog"></i></b-button>
+        </div>
 
         <TheSettingsModal></TheSettingsModal>
         <TheInfoModal></TheInfoModal>

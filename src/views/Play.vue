@@ -4,13 +4,13 @@
         <b-button variant="secondary" @click="goToPlaylists" class="new-pl-btn" :disabled="selectionMade || !tracks">Choose New Playlist</b-button>
         <div class="d-flex flex-column justify-content-center align-items-center h-100 w-100">
             <div class="d-flex flex-column justify-content-center align-items-center h-75 play-card">
-                <b-card v-if="gameOver" class="shadow-lg border-0" header-tag="h4" :header="gameOverHeader" body-class="overflow-auto" header-bg-variant="secondary">
-                    <div v-if="incorrectSongs.length === 0">
+                <b-card v-if="gameOver" class="shadow-lg border-0 text-light" header-tag="h4" :header="gameOverHeader" body-class="overflow-auto" header-bg-variant="secondary" bg-variant="dark">
+                    <div v-if="incorrectSongs.length === 0" class="text-light">
                         <h5>100%! Nice Job!</h5>
                     </div>
-                    <div v-else>
+                    <div v-else class="text-light">
                         <h5>You missed these songs: </h5>
-                        <b-table :items="incorrectSongs" :fields="['artist','name']">
+                        <b-table :items="incorrectSongs" :fields="['artist','name']" dark class="border-0">
                             <template slot="artist" slot-scope="data">
                                 {{data.item.artists[0].name}}
                             </template>
@@ -19,13 +19,16 @@
                     <b-button @click="goToPlaylists" variant="primary">Play Again?</b-button>
                 </b-card>
 
-                <b-card class="overflow-auto shadow-lg w-100 h-100 border-0" v-else :header="songsLeftsHeader" header-tag="h4" body-class="overflow-auto" header-bg-variant="secondary">
+                <b-card class="overflow-auto shadow-lg w-100 h-100 border-0"
+                        v-else :header="songsLeftsHeader" header-tag="h4" body-class="overflow-auto"
+                        header-bg-variant="secondary" bg-variant="dark" text-variant="light">
                     <b-button block :variant="buttonVariant(track.uri)" v-for="track in choices" :key="track.uri" @click="onChoiceClick(track.uri)" :disabled="selectionMade">
                         {{track.artists[0].name}} - {{track.name}}
                     </b-button>
                 </b-card>
 
-                <b-card v-if="!gameOver && tracks" class="w-100 shadow-lg border-0" body-class="p-2" body-bg-variant="dark" header-bg-variant="secondary">
+                <b-card v-if="!gameOver && tracks" class="w-100 shadow-lg border-0" body-class="p-2" body-bg-variant="dark">
+                    <hr class="bg-light" />
                     <b-button variant="secondary" @click="replayTrack" :disabled="$store.state.lockControls"><i class="fas fa-undo"></i></b-button>
                     <b-progress class="mt-2" :max="$store.state.settings.listeningDuration-800">
                         <b-progress-bar :value="progress" variant="primary"></b-progress-bar>
@@ -290,7 +293,7 @@
                 else if (this.showFeedback && uri === this.userChoiceURI)
                     return 'danger';
                 else
-                    return 'outline-primary';
+                    return 'primary';
             },
 
             /**
