@@ -1,7 +1,10 @@
 <template>
     <!-- TODO: Add carousel background of album covers -->
     <div class="d-flex justify-content-center align-items-center h-100 flex-column position-relative">
-        <b-card class="h-75 shadow-lg choose-playlist-card" header="Select a Playlist" header-tag="h4" body-class="overflow-auto p-4" no-body header-bg-variant="secondary">
+        <b-carousel class="carousel-bg" no-touch no-hover-pause fade>
+            <b-carousel-slide v-for="pl in playLists" :img-src="pl.images[0].url" :key="pl.id"></b-carousel-slide>
+        </b-carousel>
+        <b-card class="h-75 shadow-lg choose-playlist-card border-0" header="Select a Playlist" header-tag="h4" body-class="overflow-auto p-4" no-body header-bg-variant="secondary">
             <b-tabs card class="overflow-auto">
                 <b-tab title="My Playlists">
                     <b-table :items="playLists" :fields="playlistTableFields" outlined reponsive hover class="overflow-auto" thead-class="d-none" v-if="playLists" :busy="isLoading">
@@ -67,7 +70,7 @@
                 playlistTableFields: ['name', 'images', 'select'],
                 isLoading: false,
                 searchKeyword: '',
-                searchIsLoading: false
+                searchIsLoading: false,
             }
         },
         watch: {
@@ -110,7 +113,7 @@
                 response.data.items.forEach(item=>{
                     if (item.tracks.total > 0)
                         this.playLists.push(item)
-                })
+                });
                 this.isLoading = false;
             },
 
@@ -155,4 +158,5 @@
     .choose-playlist-card {
         width: 75%;
     }
+
 </style>

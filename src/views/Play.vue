@@ -1,10 +1,10 @@
 <template>
     <!-- TODO: Add carousel background of currently playing song's cover art, unblur when song selected -->
     <div class="d-flex h-100 position-relative">
-        <b-button variant="secondary" @click="goToPlaylists" style="position: absolute; top: 10px; left: 10px" :disabled="selectionMade || !tracks">Choose New Playlist</b-button>
+        <b-button variant="secondary" @click="goToPlaylists" class="new-pl-btn" :disabled="selectionMade || !tracks">Choose New Playlist</b-button>
         <div class="d-flex flex-column justify-content-center align-items-center h-100 w-100">
             <div class="d-flex flex-column justify-content-center align-items-center h-75 play-card">
-                <b-card v-if="gameOver" class="shadow-lg" header-tag="h4" :header="gameOverHeader" body-class="overflow-auto" header-bg-variant="secondary">
+                <b-card v-if="gameOver" class="shadow-lg border-0" header-tag="h4" :header="gameOverHeader" body-class="overflow-auto" header-bg-variant="secondary">
                     <div v-if="incorrectSongs.length === 0">
                         <h5>100%! Nice Job!</h5>
                     </div>
@@ -19,13 +19,13 @@
                     <b-button @click="goToPlaylists" variant="primary">Play Again?</b-button>
                 </b-card>
 
-                <b-card class="overflow-auto shadow-lg w-100 h-100" v-else :header="songsLeftsHeader" header-tag="h4" body-class="overflow-auto" header-bg-variant="secondary">
+                <b-card class="overflow-auto shadow-lg w-100 h-100 border-0" v-else :header="songsLeftsHeader" header-tag="h4" body-class="overflow-auto" header-bg-variant="secondary">
                     <b-button block :variant="buttonVariant(track.uri)" v-for="track in choices" :key="track.uri" @click="onChoiceClick(track.uri)" :disabled="selectionMade">
                         {{track.artists[0].name}} - {{track.name}}
                     </b-button>
                 </b-card>
 
-                <b-card v-if="!gameOver && tracks" class="w-100 shadow-lg" body-class="p-2" body-bg-variant="dark" header-bg-variant="secondary">
+                <b-card v-if="!gameOver && tracks" class="w-100 shadow-lg border-0" body-class="p-2" body-bg-variant="dark" header-bg-variant="secondary">
                     <b-button variant="secondary" @click="replayTrack" :disabled="$store.state.lockControls"><i class="fas fa-undo"></i></b-button>
                     <b-progress class="mt-2" :max="$store.state.settings.listeningDuration-800">
                         <b-progress-bar :value="progress" variant="primary"></b-progress-bar>
@@ -329,5 +329,11 @@
     }
     .play-card {
         width: 75%;
+    }
+    .new-pl-btn {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
     }
 </style>

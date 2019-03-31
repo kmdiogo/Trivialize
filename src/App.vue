@@ -49,14 +49,6 @@
         bottom: 10px;
         right: 10px;
     }
-    .overlay{
-        position:fixed;
-
-        top:0;
-        left:0;
-        width:100%;
-        height:100%;
-    }
     @-webkit-keyframes scroll{
         100%{
             background-position:0px -3000px;

@@ -1,7 +1,7 @@
 <template>
     <div class="d-flex justify-content-center align-items-center">
         <video autoplay muted loop class="background-video">
-            <source src="../assets/images/Turntable.mp4" type="video/mp4">
+            <source src="../assets/images/TurntableLoop.mp4" type="video/mp4">
         </video>
         <b-card title="Welcome to Trivialize!" sub-title="Click the button below to connect your account and get started" class="main-card" v-if="!$store.state.accessToken">
             <b-button @click="redirectToSpotify" style="color: #1ED760; background-color: black" size="lg"><i class="fab fa-spotify fa-2x"></i></b-button>
@@ -12,7 +12,7 @@
 
         <TheWebPlayback></TheWebPlayback>
 
-        <b-modal title="Trivialize Lite" centered ok-only v-model="$store.state.isPlayliteModalOpen" size="lg" class="text-left" @ok="$router.push('/play')">
+        <b-modal title="Trivialize Lite" centered ok-only v-model="$store.state.isPlayliteModalOpen" size="lg" class="text-left" @hidden="startGame">
             <h3 class="text-center">Before you Play...</h3>
             <h6>
                 It looks like either your Spotify account isn't premium or your browser doesn't support Trivialize.
@@ -62,6 +62,10 @@
             redirectToSpotify() {
                 window.location.href = spotifyAuthUrl;
             },
+            startGame() {
+                this.$store.commit('updateInfoModalOpen', false);
+                this.$router.push('/play');
+            }
         },
     }
 </script>
@@ -76,6 +80,5 @@
         left: 0;
         min-width: 100%;
         min-height: 100%;
-        z-index: -1;
     }
 </style>

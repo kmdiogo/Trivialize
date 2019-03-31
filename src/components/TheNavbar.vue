@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div style="z-index: 1;">
         <b-navbar toggleable="md" class="vignette nav-border" variant="primary">
             <b-navbar-brand style="font-family: 'Pacifico', cursive;" class="d-flex">
                 <b-img :src="require('@/assets/images/Trivialize_Logo.png')" fluid style="width: 3rem; height: 3rem;" />
