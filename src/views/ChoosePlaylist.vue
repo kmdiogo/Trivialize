@@ -14,7 +14,7 @@
                     <i class="far fa-minus-square text-light collapse-btn" v-if="isMyPlaylistTableOpen"></i>
                     <i class="far fa-plus-square collapse-btn" v-else></i>
                 </span>
-                My Playlists
+                <span class="collapse-btn" @click="isMyPlaylistTableOpen=!isMyPlaylistTableOpen"> My Playlists</span>
             </div>
             <b-collapse id="myPlaylistTable" v-model="isMyPlaylistTableOpen">
                 <b-table :items="playLists" :fields="playlistTableFields"

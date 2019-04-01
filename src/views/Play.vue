@@ -293,7 +293,7 @@
                 else if (this.showFeedback && uri === this.userChoiceURI)
                     return 'danger';
                 else
-                    return 'primary';
+                    return 'info';
             },
 
             /**

@@ -11,6 +11,13 @@
                 <b-button class="m-1" variant="secondary" v-b-modal.TheSettingsModal><i class="fas fa-cog"></i></b-button>
             </b-navbar-nav>
         </b-navbar>
+        <div class="d-md-none">
+            <div class="d-flex justify-content-end">
+                <b-button class="m-1" variant="primary" @click="$store.commit('updateInfoModalOpen',true)"><i class="far fa-question-circle"></i></b-button>
+                <b-button class="m-1" variant="secondary" v-b-modal.TheSettingsModal><i class="fas fa-cog"></i></b-button>
+            </div>
+            <b-img :src="require('@/assets/images/Trivialize_Logo_Color.png')" fluid style="width: 3rem; height: 3rem; position: fixed; top: 5px; left: 5px;" />
+        </div>
 
         <TheSettingsModal></TheSettingsModal>
         <TheInfoModal></TheInfoModal>
