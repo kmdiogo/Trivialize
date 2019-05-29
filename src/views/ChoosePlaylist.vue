@@ -4,45 +4,62 @@
         <b-carousel class="carousel-bg" no-touch no-hover-pause fade>
             <b-carousel-slide v-for="pl in playLists" :img-src="pl.images[0].url" :key="pl.id"></b-carousel-slide>
         </b-carousel>
-        <b-card class="h-75 shadow-lg choose-playlist-card border-0" header="Select a Playlist" header-tag="h4" body-class="overflow-auto p-4" no-body header-bg-variant="secondary">
-            <b-tabs card class="overflow-auto">
-                <b-tab title="My Playlists">
-                    <b-table :items="playLists" :fields="playlistTableFields" outlined reponsive hover class="overflow-auto" thead-class="d-none" v-if="playLists" :busy="isLoading">
-                        <template slot="images" slot-scope="data">
-                            <div class="d-none d-sm-block">
-                                <b-img width="100px" height="100px" :src="noImageFallback(data.item)" fluid></b-img>
-                            </div>
-                        </template>
-                        <template slot="select" slot-scope="row">
-                            <b-button @click="onPlaylistClick(row)" size="sm">Select</b-button>
-                        </template>
-                        <template slot="table-busy" class="text-center text-primary my-2">
-                            <b-spinner class="align-middle" />
-                            <strong>Loading...</strong>
-                        </template>
-                    </b-table>
-                </b-tab>
+        <b-card class="h-75 shadow-lg choose-playlist-card border-0"
+                header="Select a Playlist" header-tag="h4"
+                body-class="overflow-auto p-4"
+                header-bg-variant="secondary" bg-variant="dark" text-variant="white">
 
-                <b-tab title="Search Playlist">
-                    <b-form-group :label-cols-md="3" label="Search Keyword: ">
-                        <b-input @input="debounceInput" size="sm"></b-input>
-                    </b-form-group>
-                    <b-table :items="searchPlayLists" :fields="playlistTableFields" outlined reponsive hover class="overflow-auto" thead-class="d-none" v-if="searchPlayLists" :busy="searchIsLoading">
-                        <template slot="images" slot-scope="data">
-                            <div class="d-none d-sm-block">
-                                <b-img width="100px" height="100px" :src="noImageFallback(data.item)" fluid></b-img>
-                            </div>
-                        </template>
-                        <template slot="select" slot-scope="row">
-                            <b-button @click="onPlaylistClick(row)" size="md">Select</b-button>
-                        </template>
-                        <template slot="table-busy" class="text-center text-primary my-2">
-                            <b-spinner class="align-middle" />
-                            <strong>Loading...</strong>
-                        </template>
-                    </b-table>
-                </b-tab>
-            </b-tabs>
+            <div class="text-left">
+                <span @click="isMyPlaylistTableOpen=!isMyPlaylistTableOpen">
+                    <i class="far fa-minus-square text-light collapse-btn" v-if="isMyPlaylistTableOpen"></i>
+                    <i class="far fa-plus-square collapse-btn" v-else></i>
+                </span>
+                <span class="collapse-btn" @click="isMyPlaylistTableOpen=!isMyPlaylistTableOpen"> My Playlists</span>
+            </div>
+            <b-collapse id="myPlaylistTable" v-model="isMyPlaylistTableOpen">
+                <b-table :items="playLists" :fields="playlistTableFields"
+                         outlined reponsive hover class="overflow-auto border-0"
+                         thead-class="d-none" v-if="playLists" :busy="isLoading" dark>
+                    <template slot="images" slot-scope="data">
+                        <div class="d-none d-sm-block">
+                            <b-img width="100px" height="100px" :src="noImageFallback(data.item)" fluid></b-img>
+                        </div>
+                    </template>
+                    <template slot="select" slot-scope="row">
+                        <b-button @click="onPlaylistClick(row)" size="sm" variant="primary">Select</b-button>
+                    </template>
+                    <template slot="table-busy" class="text-center text-primary my-2">
+                        <b-spinner class="align-middle" />
+                        <strong>Loading...</strong>
+                    </template>
+                </b-table>
+            </b-collapse>
+
+            <hr class="bg-light" />
+
+            <div class="text-left">
+                <b-form-group label="Search Playlist: ">
+                    <b-input @input="debounceInput" size="sm"></b-input>
+                </b-form-group>
+                <b-table :items="searchPlayLists" :fields="playlistTableFields"
+                         outlined reponsive hover class="overflow-auto text-light border-0"
+                         thead-class="d-none" v-if="searchPlayLists" :busy="searchIsLoading" dark>
+                    <template slot="images" slot-scope="data">
+                        <div class="d-none d-sm-block">
+                            <b-img width="100px" height="100px" :src="noImageFallback(data.item)" fluid></b-img>
+                        </div>
+                    </template>
+                    <template slot="select" slot-scope="row">
+                        <b-button @click="onPlaylistClick(row)" size="md" variant="primary">Select</b-button>
+                    </template>
+                    <template slot="table-busy" class="text-center text-primary my-2">
+                        <b-spinner class="align-middle" />
+                        <strong>Loading...</strong>
+                    </template>
+                </b-table>
+            </div>
+
+
         </b-card>
     </div>
 
@@ -71,6 +88,7 @@
                 isLoading: false,
                 searchKeyword: '',
                 searchIsLoading: false,
+                isMyPlaylistTableOpen: false,
             }
         },
         watch: {
@@ -106,6 +124,12 @@
             }
         },
         methods: {
+            tabClass(i) {
+                if (this.tabIndex === i)
+                    return ['bg-light', 'text-dark', 'border-0'];
+                else
+                    return ['bg-dark', 'text-light', 'border-0'];
+            },
             async loadPlaylists() {
                 this.isLoading = true;
                 let response = await this.spotifyController.getUserPlaylists();
@@ -157,6 +181,9 @@
     }
     .choose-playlist-card {
         width: 75%;
+    }
+    .collapse-btn:hover {
+        cursor: pointer;
     }
 
 </style>
